@@ -5,30 +5,63 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"unicode"
 )
 
 func main() {
 	// Welcome message for the user
 	fmt.Println("=== Vowel & Consonant Counter ===")
 
-	// Create a reader to capture user input from terminal
+	// Create reader for user input
 	reader := bufio.NewReader(os.Stdin)
 
-	// Ask the user for input
+	// Prompt user
 	fmt.Print("Enter a word or sentence: ")
 
-	// Read input until newline
+	// Read full input line
 	input, err := reader.ReadString('\n')
 	if err != nil {
-		// Handle unexpected input error
 		fmt.Println("Error reading input:", err)
 		return
 	}
 
-	// Clean the input by removing spaces and newline characters
+	// Clean input
 	input = strings.TrimSpace(input)
 
-	// Show what the user entered (confirmation step)
-	fmt.Println("\nYou entered:", input)
+	// Run counter logic
+	vowels, consonants := countVowelsAndConsonants(input)
 
+	// Output results
+	fmt.Println("\nResults:")
+	fmt.Println("Vowels:", vowels)
+	fmt.Println("Consonants:", consonants)
+}
+
+// countVowelsAndConsonants processes the string and returns counts
+func countVowelsAndConsonants(text string) (int, int) {
+	vowelCount := 0
+	consonantCount := 0
+
+	// Define vowel set for quick lookup
+	vowels := "aeiou"
+
+	// Convert to lowercase for uniform comparison
+	text = strings.ToLower(text)
+
+	// Loop through each character
+	for _, char := range text {
+		// Ignore non-letter characters (spaces, numbers, symbols)
+		if !unicode.IsLetter(char) {
+			continue
+		}
+
+		// Check if character is a vowel
+		if strings.ContainsRune(vowels, char) {
+			vowelCount++
+		} else {
+			consonantCount++
+		}
+	}
+
+	return vowelCount, consonantCount
 }
