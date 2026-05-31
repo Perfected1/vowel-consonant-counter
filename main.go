@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"os"
 	"strings"
@@ -10,30 +11,47 @@ import (
 )
 
 func main() {
-	// App header
+	// CLI flag for direct input
+	textFlag := flag.String("text", "", "Text to analyze directly")
+	flag.Parse()
+
 	fmt.Println("=== Vowel & Consonant Counter ===")
 
-	// Input reader
-	reader := bufio.NewReader(os.Stdin)
-
-	// Prompt user
-	fmt.Print("Enter a word or sentence: ")
-
-	// Read input
-	input, err := reader.ReadString('\n')
-	if err != nil {
-		fmt.Println("Error reading input:", err)
+	// If user passed text via flag, process immediately
+	if *textFlag != "" {
+		processText(*textFlag)
 		return
 	}
 
-	// Clean input
-	input = strings.TrimSpace(input)
+	// Otherwise enter interactive mode
+	reader := bufio.NewReader(os.Stdin)
 
-	// Call counter package
-	vowels, consonants := counter.CountVowelsAndConsonants(input)
+	for {
+		fmt.Print("\nEnter text (or type 'exit' to quit): ")
 
-	// Display results
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("Error reading input:", err)
+			return
+		}
+
+		input = strings.TrimSpace(input)
+
+		// Exit condition
+		if strings.ToLower(input) == "exit" {
+			fmt.Println("Goodbye!")
+			break
+		}
+
+		processText(input)
+	}
+}
+
+// processText handles counting and output display
+func processText(text string) {
+	vowels, consonants := counter.CountVowelsAndConsonants(text)
+
 	fmt.Println("\nResults:")
 	fmt.Println("Vowels:", vowels)
 	fmt.Println("Consonants:", consonants)
-} 
+}
